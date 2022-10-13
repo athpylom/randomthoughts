@@ -126,12 +126,17 @@ lenlist = []
 index = 0
 n0 = node(0,0,0,0,0, None,0)
 n0.setParent(n0)
+n0.setChild(n0)
 Flist.append(n0)
+n1 = node(0,0,0,0,1,n0,1)
+n1.setParent(n0)
+n1.setChild(n0)
+n2 = node(1,1,1,1,0,n0,2)
+n2.setParent(n0)
+Flist.append(n1)
+Flist.append(n2)
 
-Flist.append(node(0,0,0,0,1,n0,1))
-Flist.append(node(1,1,1,1,0,n0,2))
-
-Wlist.append(node(1,1,1,1,0,n0,2))
+Wlist.append(n2)
 
 while len(Wlist) != 0:
     Wlist = iter(Flist,Wlist)
