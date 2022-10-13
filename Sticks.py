@@ -2,13 +2,23 @@ def stMath(num1, num2):
     return (num1+num2)%5
 
 class node:
-    def __init__(self, l1, l2, r1, r2, turn, parent):
+    def __init__(self, l1, l2, r1, r2, turn, parent, index):
         self.l1 = l1
         self.l2 = l2
         self.r1 = r1
         self.r2 = r2
         self.turn = turn
         self.childlist = []
+        self.parent = parent
+        self.index = index
+
+    def setIndex(self, num):
+        self.index = num
+    
+    def getIndex(self):
+        return self.index
+    
+    def setParent(self, parent):
         self.parent = parent
 
     def getParent(self):
@@ -20,62 +30,70 @@ class node:
     def getChilds(self):
         return self.childlist
 
-    def get(self):
+    def getReduc(self):
         return self.l1,self.l2,self.r1,self.r2,self.turn
+
+    def get(self):
+        return self.l1,self.l2,self.r1,self.r2,self.turn,self.parent.getIndex(),self.index
 
     def gen(self):
         if (self.turn == 0):
             if (self.l1 == 0 and self.l2 % 2 == 0 and self.l2 != 0):
-                self.childlist.append(node(int(self.l2 / 2), int(self.l2 / 2), self.r1, self.r2, 1,self))
-            elif (self.l1 != 0):
+                self.childlist.append(node(int(self.l2 / 2), int(self.l2 / 2), self.r1, self.r2, 1,self,0))
+            if (self.l1 != 0 and self.r1 != 0):
                 self.childlist.append(
                     node(self.l1, self.l2, stMath(self.r1, self.l1), self.r2,
-                         1,self))
+                         1,self,0))
+            if (self.l1 != 0 and self.r2 != 0):
                 self.childlist.append(
                     node(self.l1, self.l2, self.r1, stMath(self.r2, self.l1),
-                         1,self))
+                         1,self,0))
 
             if (self.l2 == 0 and self.l1 % 2 == 0 and self.l1 != 0):
                 self.childlist.append(
-                    node(int(self.l1 / 2), int(self.l1 / 2), self.r1, self.r2, 1,self))
-            elif (self.l2 != 0):
+                    node(int(self.l1 / 2), int(self.l1 / 2), self.r1, self.r2, 1,self,0))
+            if (self.l2 != 0 and self.r1 != 0):
                 self.childlist.append(
                     node(self.l1, self.l2, stMath(self.r1, self.l2), self.r2,
-                         1,self))
+                         1,self,0))
+            if (self.l2 != 0 and self.r2 != 0):
                 self.childlist.append(
                     node(self.l1, self.l2, self.r1, stMath(self.r2, self.l2),
-                         1,self))
+                         1,self,0))
 
             if (self.l1 == 0 and self.l2 == 0):
-                self.childlist.append(node(0, 0, 0, 0, 1,self))
+                self.childlist.append(node(0, 0, 0, 0, 1,self,0))
         else:
             if (self.r1 == 0 and self.r2 % 2 == 0 and self.r2 != 0):
                 self.childlist.append(
-                    node(self.l1, self.l2, int(self.r2 / 2), int(self.r2 / 2), 0,self))
-            elif (self.l1 != 0):
+                    node(self.l1, self.l2, int(self.r2 / 2), int(self.r2 / 2), 0,self,0))
+            if (self.r1 != 0 and self.l1 != 0):
                 self.childlist.append(
                     node(stMath(self.l1, self.r1), self.l2, self.r1, self.r2,
-                         0,self))
+                         0,self,0))
+            if (self.r1 != 0 and self.l2 != 0):
                 self.childlist.append(
                     node(self.l1, stMath(self.l2, self.r1), self.r1, self.r2,
-                         0,self))
+                         0,self,0))
 
             if (self.r2 == 0 and self.r1 % 2 == 0 and self.r1 != 0):
                 self.childlist.append(
-                    node(self.l1, self.l2, int(self.r1 / 2), int(self.r1 / 2), 0,self))
-            elif (self.l1 != 0):
+                    node(self.l1, self.l2, int(self.r1 / 2), int(self.r1 / 2), 0,self,0))
+            if (self.r2 != 0 and self.l1 != 0):
                 self.childlist.append(
                     node(stMath(self.l1, self.r2), self.l2, self.r1, self.r2,
-                         0,self))
+                         0,self,0))
+            if (self.r2 != 0 and self.l2 != 0):
                 self.childlist.append(
                     node(self.l1, stMath(self.l2, self.r2), self.r1, self.r2,
-                         0,self))
+                         0,self,0))
 
             if (self.r1 == 0 and self.r2 == 0):
-                self.childlist.append(node(0, 0, 0, 0, 0,self))
+                self.childlist.append(node(0, 0, 0, 0, 0,self,0))
         return self.childlist
 
 def iter(Flist, Wlist):
+    index = len(Flist)
     Wlist2 = []
     for x in Wlist:
         Wlist1 = x.gen()
@@ -84,38 +102,36 @@ def iter(Flist, Wlist):
     Wlist1 = []
     for node in Wlist2:
         if CFlist(Flist, node)[0]:
-            node.setChild(CFlist(Flist, node)[1])
+            node.setChild(Flist[CFlist(Flist, node)[1]])
+            node.setIndex(index)
             Flist.append(node)
         else:
+            node.setIndex(index)
             Flist.append(node)
             Wlist1.append(node)
+        index += 1
     return Wlist1
 
 
 def CFlist(Flist,check):
     for x in range(0,len(Flist)):
-        if Flist[x].get() == check.get():
+        if Flist[x].getReduc() == check.getReduc():
             return True, x
     return False, 0
 
 Flist = []
 Wlist = []
 Wlist1 = []
-n0 = node(0,0,0,0,0, None)
+lenlist = []
+index = 0
+n0 = node(0,0,0,0,0, None,0)
+n0.setParent(n0)
 Flist.append(n0)
 
-Flist.append(node(0,0,0,0,1,n0))
-Flist.append(node(1,1,1,1,0,n0))
+Flist.append(node(0,0,0,0,1,n0,1))
+Flist.append(node(1,1,1,1,0,n0,2))
 
-Wlist.append(node(1,1,1,1,0,n0))
-lenlist = []
+Wlist.append(node(1,1,1,1,0,n0,2))
+
 while len(Wlist) != 0:
-    lenlist.append(len(Wlist))
     Wlist = iter(Flist,Wlist)
-    for p in Wlist:
-        print(p.get(),end = " ")
-    print("")
-for i in Flist:
-    print(i.get(),end = " ")
-print("")
-print(lenlist)
